@@ -74,8 +74,8 @@ int palm_flag;
 
 extern int32_t fts_extra_proc_init(void);
 extern int32_t fts_extra_proc_deinit(void);
-extern	int	fts_tp_data_dump_proc_init(void);
-extern	void	fts_tp_data_dump_proc_exit(void);
+// extern	int	fts_tp_data_dump_proc_init(void);
+// extern	void	fts_tp_data_dump_proc_exit(void);
 /*****************************************************************************
 * Static function prototypes
 *****************************************************************************/
@@ -1773,7 +1773,7 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 		FTS_ERROR("fts extra proc init failed. ret=%d\n", ret);
 		goto err_fts_extra_proc_init_failed;
 	}
-	ret = fts_tp_data_dump_proc_init();
+	ret = 0; /* fts_tp_data_dump_proc_init() removed - test module not included */
 	if (ret != 0) {
 		FTS_ERROR("fts extra proc tp data dump failed. ret=%d\n", ret);
 		goto err_fts_tp_data_dump_proc_init_failed;
@@ -1899,7 +1899,7 @@ err_lockdown_proc_init_failed:
 	return ret;
 
 err_fts_tp_data_dump_proc_init_failed:
-	fts_tp_data_dump_proc_exit();
+// fts_tp_data_dump_proc_exit(); /* removed - test module not included */
 	FTS_FUNC_EXIT();
 	return ret;
 }
