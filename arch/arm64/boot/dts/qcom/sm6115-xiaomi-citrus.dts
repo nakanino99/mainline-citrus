@@ -593,3 +593,14 @@
 };
 
 /delete-node/ &cdsp_sec_mem;
+
+&reserved_memory {
+	pstore: ramoops@64000000 {
+		compatible = "ramoops";
+		reg = <0x0 0x64000000 0x0 0x400000>;
+		record-size = <0x100000>;
+		console-size = <0x100000>;
+		pmsg-size = <0x200000>;
+		ftrace-size = <0x0>;
+	};
+};
