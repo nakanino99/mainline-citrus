@@ -568,6 +568,7 @@
 
 &uart4 {
         status = "okay";
+	compatible = "qcom,geni-uart";
 };
 
 /* Restore memory regions to match stock/downstream firmware expectations
