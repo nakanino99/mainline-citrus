@@ -523,6 +523,10 @@
 &ufs_mem_phy {
 	vdda-phy-supply = <&pm6125_l4a>;
 	vdda-pll-supply = <&pm6125_l12a>;
+
+	resets = <&gcc GCC_UFS_PHY_BCR>;
+	reset-names = "ufsphy";
+
 	status = "okay";
 };
 
