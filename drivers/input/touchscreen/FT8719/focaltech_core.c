@@ -2176,6 +2176,7 @@ static void fts_ts_remove(struct spi_device *spi)
 
 static const struct spi_device_id fts_ts_id[] = {
 	{FTS_DRIVER_NAME, 0},
+	{"fts", 0},
 	{},
 };
 static const struct of_device_id fts_dt_match[] = {
