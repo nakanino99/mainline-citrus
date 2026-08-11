@@ -2177,8 +2177,10 @@ static void fts_ts_remove(struct spi_device *spi)
 static const struct spi_device_id fts_ts_id[] = {
 	{FTS_DRIVER_NAME, 0},
 	{"fts", 0},
+	{"focaltech,fts", 0},
 	{},
 };
+MODULE_DEVICE_TABLE(spi, fts_ts_id);
 static const struct of_device_id fts_dt_match[] = {
 	{.compatible = "focaltech,fts", },
 	{},
@@ -2223,8 +2225,8 @@ static void __exit fts_ts_exit(void)
 	spi_unregister_driver(&fts_ts_driver);
 }
 
-late_initcall(fts_ts_init);
-//module_init(fts_ts_init);
+//late_initcall(fts_ts_init);
+module_init(fts_ts_init);
 module_exit(fts_ts_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
