@@ -572,6 +572,8 @@
 
 &uart4 {
         status = "okay";
+	power-domains = <&rpmpd SM6115_VDDCX>;
+	operating-points-v2 = <&qup_opp_table>;
 };
 
 /* Restore memory regions to match stock/downstream firmware expectations
