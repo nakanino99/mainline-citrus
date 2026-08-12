@@ -130,6 +130,9 @@
 
 &spi2 {
 	status = "okay";
+	/delete-property/ interconnects;
+	/delete-property/ interconnect-names;
+
 
 	touchscreen@0 {
 		compatible = "focaltech,fts";
