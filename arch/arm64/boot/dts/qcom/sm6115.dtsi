@@ -1260,7 +1260,7 @@
 
 			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
 
-			resets = <&gcc GCC_UFS_PHY_BCR>;
+			resets = <&ufs_mem_hc 0>;
 			reset-names = "ufsphy";
 
 			#phy-cells = <0>;
