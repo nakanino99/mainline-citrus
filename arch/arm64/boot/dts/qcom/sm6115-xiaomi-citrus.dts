@@ -130,8 +130,8 @@
 
 &spi2 {
 	status = "okay";
-	/delete-property/ interconnects;
-	/delete-property/ interconnect-names;
+	interconnects;
+	interconnect-names;
 
 
 	touchscreen@0 {
@@ -572,8 +572,6 @@
 
 &uart4 {
         status = "okay";
-	power-domains = <&rpmpd SM6115_VDDCX>;
-	operating-points-v2 = <&qup_opp_table>;
 };
 
 /* Restore memory regions to match stock/downstream firmware expectations
