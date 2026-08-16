@@ -1278,6 +1278,17 @@ config DRM_PANEL_TRULY_NT35597_WQXGA
 	  Say Y here if you want to enable support for Truly NT35597 WQXGA Dual DSI
 	  Video Mode panel
 
+config DRM_PANEL_TRULY_FT8719
+	tristate "Truly FT8719 video mode panel driver"
+	depends on GPIOLIB
+	depends on OF
+	depends on DRM_MIPI_DSI
+	help
+	  Say Y here if you want to enable support for the Truly
+	  FT8719 video mode panel. Mainly found on Xiaomi Poco M3
+	  (citrus) mobile phone. The panel has a resolution of
+	  1080x2340. It provides a MIPI DSI interface to the host.
+
 config DRM_PANEL_VISIONOX_G2647FB105
 	tristate "Visionox G2647FB105"
 	depends on OF
