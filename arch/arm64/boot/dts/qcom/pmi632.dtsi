@@ -204,5 +204,32 @@
 			reg = <0x5700>;
 			status = "disabled";
 		};
+
+		pmi632_lcdb: qpnp-lcdb@ec00 {
+			compatible = "qcom,qpnp-lcdb-regulator";
+			reg = <0xec00>;
+			interrupts = <0x3 0xec 0x1 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "sc-irq";
+			qcom,voltage-step-ramp;
+			status = "disabled";
+
+			lcdb_ldo_vreg: ldo {
+				regulator-name = "lcdb_ldo";
+				regulator-min-microvolt = <4000000>;
+				regulator-max-microvolt = <6000000>;
+			};
+
+			lcdb_ncp_vreg: ncp {
+				regulator-name = "lcdb_ncp";
+				regulator-min-microvolt = <4000000>;
+				regulator-max-microvolt = <6000000>;
+			};
+
+			lcdb_bst_vreg: bst {
+				regulator-name = "lcdb_bst";
+				regulator-min-microvolt = <4700000>;
+				regulator-max-microvolt = <6272952>;
+			};
+		};
 	};
 };

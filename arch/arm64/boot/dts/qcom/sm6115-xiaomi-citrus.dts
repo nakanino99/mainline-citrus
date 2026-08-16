@@ -162,15 +162,11 @@
 	status = "okay";
 
 	panel: panel@0 {
-		compatible = "boe,bf060y8m-aj0";
+		compatible = "truly,ft8719-video";
 		reg = <0>;
 
 		reset-gpios = <&tlmm 82 GPIO_ACTIVE_LOW>;
 
-		elvdd-supply = <&disp_elvdd_supply>;
-		elvss-supply = <&disp_elvss_supply>;
-		vcc-supply = <&disp_vcc_supply>;
-		vci-supply = <&disp_vci_supply>;
 		vddio-supply = <&pm6125_l9a>;
 
 		pinctrl-0 = <&mdss_dsi_n &panel_en_n>;
@@ -182,6 +178,22 @@
 			};
 		};
 	};
+};
+
+&pmi632_lcdb {
+	status = "okay";
+};
+
+&lcdb_ldo_vreg {
+	regulator-always-on;
+};
+
+&lcdb_ncp_vreg {
+	regulator-always-on;
+};
+
+&lcdb_bst_vreg {
+	regulator-always-on;
 };
 
 &mdss_dsi0_out {
