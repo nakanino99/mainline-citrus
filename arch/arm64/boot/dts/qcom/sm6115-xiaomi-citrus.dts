@@ -137,9 +137,6 @@
 		reg = <0>;
 		spi-max-frequency = <6000000>;
 
-		interrupt-parent = <&tlmm>;
-		interrupts = <93 IRQ_TYPE_EDGE_FALLING>;
-
 		focaltech,reset-gpios = <&tlmm 103 GPIO_ACTIVE_LOW>;
 		focaltech,irq-gpios = <&tlmm 93 GPIO_ACTIVE_HIGH>;
 
@@ -561,6 +558,8 @@
 };
 
 &usb_qmpphy {
+	/delete-property/ orientation-switch;
+
 	vdda-phy-supply = <&pm6125_l4a>;
 	vdda-pll-supply = <&pm6125_l12a>;
 	status = "okay";
