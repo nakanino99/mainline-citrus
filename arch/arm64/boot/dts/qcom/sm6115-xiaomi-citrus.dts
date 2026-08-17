@@ -142,9 +142,6 @@
 
 		focaltech,max-touch-number = <10>;
 		focaltech,display-coords = <0 0 1080 2340>;
-
-		pinctrl-names = "default";
-		pinctrl-0 = <&ts_int_n>, <&ts_rst_n>;
 	};
 };
 
