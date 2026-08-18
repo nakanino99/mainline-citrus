@@ -1264,13 +1264,33 @@ static int fts_parse_dt(struct device *dev, struct fts_ts_platform_data *pdata)
 	}
 
 	/* reset, irq gpio info */
-	pdata->reset_gpio = desc_to_gpio(gpiod_get_index(dev, "focaltech,reset", 0, GPIOD_ASIS));
-	if (pdata->reset_gpio < 0)
-		FTS_ERROR("Unable to get reset_gpio");
+	/*
+	 * NOTE: gpiod_get_index() claims the GPIO. We only want the pin
+	 * number here; ownership is taken later in fts_gpio_configure()
+	 * via the legacy gpio_request() API, so release it immediately
+	 * to avoid a double-claim (-EBUSY) on probe.
+	 */
+	{
+		struct gpio_desc *__gd;
 
-	pdata->irq_gpio = desc_to_gpio(gpiod_get_index(dev, "focaltech,irq", 0, GPIOD_ASIS));
-	if (pdata->irq_gpio < 0)
-		FTS_ERROR("Unable to get irq_gpio");
+		__gd = gpiod_get_index(dev, "focaltech,reset", 0, GPIOD_ASIS);
+		if (IS_ERR(__gd)) {
+			FTS_ERROR("Unable to get reset_gpio");
+			pdata->reset_gpio = -1;
+		} else {
+			pdata->reset_gpio = desc_to_gpio(__gd);
+			gpiod_put(__gd);
+		}
+
+		__gd = gpiod_get_index(dev, "focaltech,irq", 0, GPIOD_ASIS);
+		if (IS_ERR(__gd)) {
+			FTS_ERROR("Unable to get irq_gpio");
+			pdata->irq_gpio = -1;
+		} else {
+			pdata->irq_gpio = desc_to_gpio(__gd);
+			gpiod_put(__gd);
+		}
+	}
 
 	ret = of_property_read_u32(np, "focaltech,max-touch-number", &temp_val);
 	if (ret < 0) {
