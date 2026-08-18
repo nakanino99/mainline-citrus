@@ -271,12 +271,12 @@
 };
 
 &remoteproc_adsp {
-	firmware-name = "qcom/sm6115/Fxtec/QX1050/adsp.mbn";
+	firmware-name = "qcom/sm6115/xiaomi-citrus/adsp.mdt";
 	status = "okay";
 };
 
 &remoteproc_cdsp {
-	firmware-name = "qcom/sm6115/Fxtec/QX1050/cdsp.mbn";
+	firmware-name = "qcom/sm6115/xiaomi-citrus/cdsp.mdt";
 	status = "okay";
 };
 

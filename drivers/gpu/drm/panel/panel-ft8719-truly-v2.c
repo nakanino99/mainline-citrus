@@ -13,6 +13,8 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_probe_helper.h>
 
+#include <linux/backlight.h>
+
 struct ft8719_truly_v2 {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
@@ -86,6 +88,41 @@ static int ft8719_truly_v2_off(struct ft8719_truly_v2 *ctx)
 	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xf7, 0x5a, 0xa5, 0x95, 0x27);
 
 	return dsi_ctx.accum_err;
+}
+
+static int ft8719_truly_v2_bl_update_status(struct backlight_device *bl)
+{
+	struct mipi_dsi_device *dsi = bl_get_data(bl);
+	u16 brightness = backlight_get_brightness(bl);
+	int ret;
+
+	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
+
+	ret = mipi_dsi_dcs_set_display_brightness_large(dsi, brightness);
+	if (ret < 0)
+		return ret;
+
+	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
+
+	return 0;
+}
+
+static const struct backlight_ops ft8719_truly_v2_bl_ops = {
+	.update_status = ft8719_truly_v2_bl_update_status,
+};
+
+static struct backlight_device *
+ft8719_truly_v2_create_backlight(struct mipi_dsi_device *dsi)
+{
+	struct device *dev = &dsi->dev;
+	const struct backlight_properties props = {
+		.type = BACKLIGHT_RAW,
+		.brightness = 4095,
+		.max_brightness = 4095,
+	};
+
+	return devm_backlight_device_register(dev, dev_name(dev), dev, dsi,
+					       &ft8719_truly_v2_bl_ops, &props);
 }
 
 static int ft8719_truly_v2_prepare(struct drm_panel *panel)
@@ -173,6 +210,11 @@ static int ft8719_truly_v2_probe(struct mipi_dsi_device *dsi)
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
 	ctx->panel.prepare_prev_first = true;
+
+	ctx->panel.backlight = ft8719_truly_v2_create_backlight(dsi);
+	if (IS_ERR(ctx->panel.backlight))
+		return dev_err_probe(dev, PTR_ERR(ctx->panel.backlight),
+				     "Failed to create backlight\n");
 
 	drm_panel_add(&ctx->panel);
 
