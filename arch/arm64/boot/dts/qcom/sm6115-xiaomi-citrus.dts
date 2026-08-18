@@ -248,25 +248,6 @@
 		pd-disable;
 
 		vbus-supply = <&pmi632_vbus>;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-				pmi632_hs_in: endpoint {
-					remote-endpoint = <&usb_dwc3_hs>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				pmi632_ss_in: endpoint {
-					remote-endpoint = <&usb_qmpphy_out>;
-				};
-			};
-		};
 	};
 };
 
@@ -543,10 +524,6 @@
 	dr_mode = "peripheral";
 };
 
-&usb_dwc3_hs {
-	remote-endpoint = <&pmi632_hs_in>;
-};
-
 &usb_hsphy {
 	vdd-supply = <&pm6125_l4a>;
 	vdda-pll-supply = <&pm6125_l12a>;
@@ -560,10 +537,6 @@
 	vdda-phy-supply = <&pm6125_l4a>;
 	vdda-pll-supply = <&pm6125_l12a>;
 	status = "okay";
-};
-
-&usb_qmpphy_out {
-	remote-endpoint = <&pmi632_ss_in>;
 };
 
 &wifi {
