@@ -160,8 +160,6 @@
 		reset-gpios = <&tlmm 82 GPIO_ACTIVE_LOW>;
 
 		vddio-supply = <&pm6125_l9a>;
-		ldo-supply = <&lcdb_ldo_vreg>;
-		ncp-supply = <&lcdb_ncp_vreg>;
 
 		pinctrl-0 = <&mdss_dsi_n &panel_en_n>;
 		pinctrl-names = "default";
@@ -176,6 +174,14 @@
 
 &pmi632_lcdb {
 	status = "okay";
+};
+
+&lcdb_ldo_vreg {
+	regulator-always-on;
+};
+
+&lcdb_ncp_vreg {
+	regulator-always-on;
 };
 
 &lcdb_bst_vreg {
