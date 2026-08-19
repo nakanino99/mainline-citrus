@@ -99,8 +99,11 @@ static int ft8719_truly_v2_bl_update_status(struct backlight_device *bl)
 	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
 
 	ret = mipi_dsi_dcs_set_display_brightness_large(dsi, brightness);
-	if (ret < 0)
+	if (ret < 0) {
+		dev_err(&dsi->dev, "Failed to set brightness %u: %d\n",
+			brightness, ret);
 		return ret;
+	}
 
 	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
