@@ -84,8 +84,8 @@ static int ft8719_truly_v2_off(struct ft8719_truly_v2 *ctx)
 	mipi_dsi_msleep(&dsi_ctx, 20);
 	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
 	mipi_dsi_msleep(&dsi_ctx, 140);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x00, 0x00);
-	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xf7, 0x5a, 0xa5, 0x95, 0x27);
+	/* TEST: skip vendor deep-sleep unlock sequence (0xf7 5a a5 95 27)
+	 * to check if it prevents panel from waking up on re-prepare() */
 
 	return dsi_ctx.accum_err;
 }
