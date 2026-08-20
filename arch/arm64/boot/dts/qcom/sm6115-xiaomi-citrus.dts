@@ -65,7 +65,7 @@
 		hall-switch {
 			label = "Hall Switch";
 			linux,input-type = <EV_SW>;
-			linux,code = <SW_KEYPAD_SLIDE>;
+			linux,code = <SW_LID>;
 			gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
 			debounce-interval = <90>;
 			wakeup-source;
