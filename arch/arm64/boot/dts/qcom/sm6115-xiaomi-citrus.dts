@@ -281,7 +281,7 @@
 };
 
 &remoteproc_mpss {
-	firmware-name = "qcom/sm6115/Fxtec/QX1050/modem.mbn";
+	firmware-name = "qcom/sm6115/xiaomi-citrus/modem.mdt";
 	status = "okay";
 };
 
