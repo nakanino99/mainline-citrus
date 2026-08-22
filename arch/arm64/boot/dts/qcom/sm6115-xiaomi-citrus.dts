@@ -282,7 +282,7 @@
 
 &remoteproc_mpss {
 	firmware-name = "qcom/sm6115/xiaomi-citrus/modem.mdt";
-	status = "disabled";
+	status = "okay";
 };
 
 &rpm_requests {
