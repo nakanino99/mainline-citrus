@@ -17,12 +17,12 @@
 	compatible = "xiaomi,citrus", "qcom,sm6115";
 	chassis-type = "handset";
 
+	qcom,msm-id = <0x1a1 0x10000 0x1bc 0x10000>;
+	qcom,board-id = <0x00 0x303>;
+
 	aliases {
 		serial0 = &uart4;
 	};
-
-	qcom,msm-id = <0x1a1 0x10000 0x1bc 0x10000>;
-	qcom,board-id = <0x00 0x303>;
 
 	chosen {
 		#address-cells = <2>;
