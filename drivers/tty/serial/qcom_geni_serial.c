@@ -1445,6 +1445,10 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
 	if (!uart_console(uport))
 		writel(port->loopback,
 				uport->membase + SE_UART_LOOPBACK_CFG);
+
+	if (!uart_console(uport) && uport->state)
+		qcom_geni_serial_stop_rx(uport);
+
 	writel(tx_trans_cfg, uport->membase + SE_UART_TX_TRANS_CFG);
 	writel(tx_parity_cfg, uport->membase + SE_UART_TX_PARITY_CFG);
 	writel(rx_trans_cfg, uport->membase + SE_UART_RX_TRANS_CFG);
@@ -1452,6 +1456,9 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
 	writel(bits_per_char, uport->membase + SE_UART_TX_WORD_LEN);
 	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
+
+	if (!uart_console(uport) && uport->state)
+		qcom_geni_serial_start_rx(uport);
 }
 
 #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
