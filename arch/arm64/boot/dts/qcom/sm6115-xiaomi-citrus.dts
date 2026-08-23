@@ -631,6 +631,6 @@
 		vddch0-supply = <&pm6125_l23a>;
 		swctrl-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
 		max-speed = <3200000>;
-		firmware-name = "crnv21.bin";
+		firmware-name = "crnv11.bin", "crbtfw11.tlv";
 	};
 };
