@@ -506,7 +506,7 @@
 		pins = "gpio8", "gpio11";
 		function = "qup3";
 		drive-strength = <2>;
-		bias-disable;
+		bias-pull-down;
 	};
 
 	qup_uart3_rts: qup-uart3-rts-state {
