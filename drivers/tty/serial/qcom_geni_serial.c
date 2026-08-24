@@ -1371,6 +1371,9 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
 	/* baud rate */
 	baud = uart_get_baud_rate(uport, termios, old, 300, 8000000);
 
+	if (!uart_console(uport) && uport->state)
+		qcom_geni_serial_stop_rx(uport);
+
 	ret = port->dev_data->set_rate(uport, baud);
 	if (ret)
 		return;
@@ -1446,8 +1449,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
 		writel(port->loopback,
 				uport->membase + SE_UART_LOOPBACK_CFG);
 
-	if (!uart_console(uport) && uport->state)
-		qcom_geni_serial_stop_rx(uport);
 
 	writel(tx_trans_cfg, uport->membase + SE_UART_TX_TRANS_CFG);
 	writel(tx_parity_cfg, uport->membase + SE_UART_TX_PARITY_CFG);
