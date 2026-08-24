@@ -1374,6 +1374,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
 	if (!uart_console(uport) && uport->state)
 		qcom_geni_serial_stop_rx(uport);
 
+	/* Cancel any in-flight GENI M/S sequencer command before
+	 * reprogramming the clock divider — stop_rx() alone doesn't
+	 * guarantee this in FIFO mode.
+	 */
+	if (readl(uport->membase + SE_GENI_STATUS) & M_GENI_CMD_ACTIVE)
+		geni_se_cancel_m_cmd(&port->se);
+	if (readl(uport->membase + SE_GENI_STATUS) & S_GENI_CMD_ACTIVE)
+		geni_se_cancel_s_cmd(&port->se);
+
 	ret = port->dev_data->set_rate(uport, baud);
 	if (ret)
 		return;
