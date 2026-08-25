@@ -2054,24 +2054,26 @@ retry:
 	}
 
 out:
-	if (ret) {
-		qca_power_off(hu);
+        if (ret) {
+                qca_power_off(hu);
 
-		if (retries < MAX_INIT_RETRIES) {
-			bt_dev_warn(hdev, "Retry BT power ON:%d", retries);
-			if (hu->serdev) {
-				serdev_device_close(hu->serdev);
-				ret = serdev_device_open(hu->serdev);
-				if (ret) {
-					bt_dev_err(hdev, "failed to open port");
-					return ret;
-				}
-			}
-			retries++;
-			goto retry;
-		}
-		return ret;
-	}
+                if (retries < MAX_INIT_RETRIES) {
+                        bt_dev_warn(hdev, "Retry BT power ON:%d", retries);
+                        if (hu->serdev) {
+                                kfree_skb(qca->rx_skb);
+                                qca->rx_skb = NULL;
+                                serdev_device_close(hu->serdev);
+                                ret = serdev_device_open(hu->serdev);
+                                if (ret) {
+                                        bt_dev_err(hdev, "failed to open port");
+                                        return ret;
+                                }
+                        }
+                        retries++;
+                        goto retry;
+                }
+                return ret;
+        }
 
 	/* Setup bdaddr */
 	if (soc_type == QCA_ROME)
