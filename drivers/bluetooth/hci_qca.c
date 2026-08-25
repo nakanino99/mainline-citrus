@@ -1791,6 +1791,8 @@ static int qca_regulator_init(struct hci_uart *hu)
 		}
 	}
 
+	msleep(100);
+
 	switch (soc_type) {
 	case QCA_WCN3950:
 	case QCA_WCN3988:
@@ -1802,6 +1804,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 		ret = qca_send_power_pulse(hu, false);
 		if (ret)
 			return ret;
+		msleep(50);
 		break;
 
 	default:
@@ -1831,6 +1834,7 @@ static int qca_regulator_init(struct hci_uart *hu)
 		ret = qca_send_power_pulse(hu, true);
 		if (ret)
 			return ret;
+		msleep(100);
 		break;
 
 	default:
