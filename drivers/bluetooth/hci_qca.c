@@ -2056,6 +2056,7 @@ retry:
 out:
         if (ret) {
                 qca_power_off(hu);
+		msleep(100);
 
                 if (retries < MAX_INIT_RETRIES) {
                         bt_dev_warn(hdev, "Retry BT power ON:%d", retries);
