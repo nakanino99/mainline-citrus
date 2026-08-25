@@ -876,7 +876,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 	}
 
 	/* Give the controller some time to get ready to receive the NVM */
-	msleep(10);
+	msleep(150);
 
 	if (soc_type == QCA_QCA2066 || soc_type == QCA_WCN7850)
 		qca_read_fw_board_id(hdev, &boardid);
