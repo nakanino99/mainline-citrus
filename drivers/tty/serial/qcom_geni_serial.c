@@ -853,33 +853,46 @@ static void qcom_geni_serial_start_rx_fifo(struct uart_port *uport)
 
 static void qcom_geni_serial_stop_rx_dma(struct uart_port *uport)
 {
-	struct qcom_geni_serial_port *port = to_dev_port(uport);
-	bool done;
+        struct qcom_geni_serial_port *port = to_dev_port(uport);
+        bool done;
 
-	if (!qcom_geni_serial_secondary_active(uport))
-		return;
+        if (!qcom_geni_serial_secondary_active(uport)) {
+                /* Stale DMA mapping from a previous transfer may still be
+                 * left behind even when no S command is active (e.g. after
+                 * serdev close/open without a full re-init). Unprep it so
+                 * the next start_rx_dma begins clean.
+                 */
+                if (port->rx_dma_addr) {
+                        pr_warn("qcom_geni_serial: unprepping stale rx_dma_addr=%pad\n",
+                                &port->rx_dma_addr);
+                        geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
+                                              DMA_RX_BUF_SIZE);
+                        port->rx_dma_addr = 0;
+                }
+                return;
+        }
 
-	geni_se_cancel_s_cmd(&port->se);
-	done = qcom_geni_serial_poll_bit(uport, SE_DMA_RX_IRQ_STAT,
-			RX_EOT, true);
-	if (done) {
-		writel(RX_EOT | RX_DMA_DONE,
-				uport->membase + SE_DMA_RX_IRQ_CLR);
-	} else {
-		qcom_geni_serial_abort_rx(uport);
+        geni_se_cancel_s_cmd(&port->se);
+        done = qcom_geni_serial_poll_bit(uport, SE_DMA_RX_IRQ_STAT,
+                        RX_EOT, true);
+        if (done) {
+                writel(RX_EOT | RX_DMA_DONE,
+                                uport->membase + SE_DMA_RX_IRQ_CLR);
+        } else {
+                qcom_geni_serial_abort_rx(uport);
 
-		writel(1, uport->membase + SE_DMA_RX_FSM_RST);
-		qcom_geni_serial_poll_bit(uport, SE_DMA_RX_IRQ_STAT,
-				RX_RESET_DONE, true);
-		writel(RX_RESET_DONE | RX_DMA_DONE,
-				uport->membase + SE_DMA_RX_IRQ_CLR);
-	}
+                writel(1, uport->membase + SE_DMA_RX_FSM_RST);
+                qcom_geni_serial_poll_bit(uport, SE_DMA_RX_IRQ_STAT,
+                                RX_RESET_DONE, true);
+                writel(RX_RESET_DONE | RX_DMA_DONE,
+                                uport->membase + SE_DMA_RX_IRQ_CLR);
+        }
 
-	if (port->rx_dma_addr) {
-		geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
-				      DMA_RX_BUF_SIZE);
-		port->rx_dma_addr = 0;
-	}
+        if (port->rx_dma_addr) {
+                geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
+                                      DMA_RX_BUF_SIZE);
+                port->rx_dma_addr = 0;
+        }
 }
 
 static void qcom_geni_serial_start_rx_dma(struct uart_port *uport)
