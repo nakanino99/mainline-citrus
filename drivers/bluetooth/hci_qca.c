@@ -14,7 +14,7 @@
  *  which was in turn based on hci_h4.c, which was written
  *  by Maxim Krasnyansky and Marcel Holtmann.
  */
-
+#define DEBUG
 #include <linux/kernel.h>
 #include <linux/clk.h>
 #include <linux/completion.h>

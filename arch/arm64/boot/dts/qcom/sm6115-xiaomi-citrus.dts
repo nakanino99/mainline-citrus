@@ -340,8 +340,8 @@
 		};
 
 		pm6125_l9a: l9 {
-			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <2000000>;
+			regulator-min-microvolt = <1700000>;
+			regulator-max-microvolt = <1900000>;
 		};
 
 		pm6125_l10a: l10 {
@@ -629,7 +629,7 @@
 		vddxo-supply = <&pm6125_l16a>;
 		vddrf-supply = <&pm6125_l17a>;
 		vddch0-supply = <&pm6125_l23a>;
-		swctrl-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
+		swctrl-gpios = <&tlmm 87 0>;
 		max-speed = <3200000>;
 		firmware-name = "crnv11.bin", "crbtfw11.tlv";
 	};

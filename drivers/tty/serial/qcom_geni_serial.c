@@ -6,6 +6,7 @@
 
 /* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
 #define __DISABLE_TRACE_MMIO__
+#define DEBUG
 
 #include <linux/clk.h>
 #include <linux/console.h>
