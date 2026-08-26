@@ -625,7 +625,7 @@
 
 	bluetooth {
 		compatible = "qcom,wcn3990-bt";
-		vddio-supply = <&pm6125_l16a>;
+		vddio-supply = <&pm6125_l9a>;
 		vddxo-supply = <&pm6125_l16a>;
 		vddrf-supply = <&pm6125_l17a>;
 		vddch0-supply = <&pm6125_l23a>;
