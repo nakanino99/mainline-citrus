@@ -411,7 +411,7 @@
 		};
 
 		pm6125_l23a: l23 {
-			regulator-min-microvolt = <3200000>;
+			regulator-min-microvolt = <3000000>;
 			regulator-max-microvolt = <3400000>;
 		};
 
@@ -506,7 +506,7 @@
 		pins = "gpio8", "gpio11";
 		function = "qup3";
 		drive-strength = <2>;
-		bias-pull-down;
+		bias-disable;
 	};
 
 	qup_uart3_rts: qup-uart3-rts-state {
