@@ -788,36 +788,48 @@ static void qcom_geni_serial_handle_rx_fifo(struct uart_port *uport, bool drop)
 
 static void qcom_geni_serial_stop_rx_fifo(struct uart_port *uport)
 {
-	u32 irq_en;
-	struct qcom_geni_serial_port *port = to_dev_port(uport);
-	u32 s_irq_status;
+        u32 irq_en;
+        struct qcom_geni_serial_port *port = to_dev_port(uport);
+        u32 s_irq_status;
+        u32 status;
+        u32 word_cnt;
 
-	irq_en = readl(uport->membase + SE_GENI_S_IRQ_EN);
-	irq_en &= ~(S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN);
-	writel(irq_en, uport->membase + SE_GENI_S_IRQ_EN);
+        irq_en = readl(uport->membase + SE_GENI_S_IRQ_EN);
+        irq_en &= ~(S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN);
+        writel(irq_en, uport->membase + SE_GENI_S_IRQ_EN);
 
-	irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
-	irq_en &= ~(M_RX_FIFO_WATERMARK_EN | M_RX_FIFO_LAST_EN);
-	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
+        irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
+        irq_en &= ~(M_RX_FIFO_WATERMARK_EN | M_RX_FIFO_LAST_EN);
+        writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
 
-	if (!qcom_geni_serial_secondary_active(uport))
-		return;
+        /* Drain any stale bytes left in the RX FIFO even when no S
+         * sequencer command is currently active.
+         */
+        status = readl(uport->membase + SE_GENI_RX_FIFO_STATUS);
+        word_cnt = status & RX_FIFO_WC_MSK;
+        if (word_cnt)
+                pr_warn("qcom_geni_serial: draining %u stale RX FIFO word(s)\n", word_cnt);
+        while (word_cnt--)
+                readl(uport->membase + SE_GENI_RX_FIFOn);
 
-	geni_se_cancel_s_cmd(&port->se);
-	qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
-					S_CMD_CANCEL_EN, true);
-	/*
-	 * If timeout occurs secondary engine remains active
-	 * and Abort sequence is executed.
-	 */
-	s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
-	/* Flush the Rx buffer */
-	if (s_irq_status & S_RX_FIFO_LAST_EN)
-		qcom_geni_serial_handle_rx_fifo(uport, true);
-	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
+        if (!qcom_geni_serial_secondary_active(uport))
+                return;
 
-	if (qcom_geni_serial_secondary_active(uport))
-		qcom_geni_serial_abort_rx(uport);
+        geni_se_cancel_s_cmd(&port->se);
+        qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
+                                        S_CMD_CANCEL_EN, true);
+        /*
+         * If timeout occurs secondary engine remains active
+         * and Abort sequence is executed.
+         */
+        s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
+        /* Flush the Rx buffer */
+        if (s_irq_status & S_RX_FIFO_LAST_EN)
+                qcom_geni_serial_handle_rx_fifo(uport, true);
+        writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
+
+        if (qcom_geni_serial_secondary_active(uport))
+                qcom_geni_serial_abort_rx(uport);
 }
 
 static void qcom_geni_serial_start_rx_fifo(struct uart_port *uport)
