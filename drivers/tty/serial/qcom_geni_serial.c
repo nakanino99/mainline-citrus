@@ -1144,7 +1144,10 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
 
 			if (dma_rx_status & RX_DMA_BREAK) {
 				uport->icount.brk++;
-				pr_err("qcom_geni_serial: BREAK condition detected, status=0x%x\n", dma_rx_status);
+				drop_rx = true;
+				pr_err("qcom_geni_serial: BREAK condition detected, "
+					"dropping RX DMA buffer, status=0x%x\n",
+					dma_rx_status);
 			}
 
 			if (dma_rx_status & (RX_DMA_DONE | RX_EOT)) {
