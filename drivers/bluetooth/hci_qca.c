@@ -1289,6 +1289,8 @@ static int qca_recv(struct hci_uart *hu, const void *data, int count)
 	if (IS_ERR(qca->rx_skb)) {
 		int err = PTR_ERR(qca->rx_skb);
 		bt_dev_err(hu->hdev, "Frame reassembly failed (%d)", err);
+		print_hex_dump(KERN_ERR, "qca_recv FAIL bytes: ",
+				DUMP_PREFIX_OFFSET, 16, 1, data, count, true);
 		qca->rx_skb = NULL;
 		return err;
 	}
