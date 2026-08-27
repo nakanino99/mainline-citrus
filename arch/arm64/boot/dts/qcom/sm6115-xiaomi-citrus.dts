@@ -630,7 +630,7 @@
 		vddrf-supply = <&pm6125_l17a>;
 		vddch0-supply = <&pm6125_l23a>;
 		swctrl-gpios = <&tlmm 87 0>;
-		max-speed = <921600>;
+		max-speed = <3200000>;
 		firmware-name = "crnv11.bin", "crbtfw11.tlv";
 	};
 };

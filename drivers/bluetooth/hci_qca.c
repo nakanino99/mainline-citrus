@@ -1432,7 +1432,7 @@ static int qca_send_power_pulse(struct hci_uart *hu, bool on)
 
 	/* Give to controller time to boot/shutdown */
 	if (on)
-		msleep(100);
+		msleep(200);
 	else
 		usleep_range(1000, 10000);
 
@@ -2059,6 +2059,7 @@ retry:
 
 out:
         if (ret) {
+		msleep(50);
                 qca_power_off(hu);
 		msleep(100);
 
