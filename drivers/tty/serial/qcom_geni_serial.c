@@ -1142,12 +1142,17 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
 				drop_rx = true;
 			}
 
-			if (dma_rx_status & RX_DMA_BREAK)
+			if (dma_rx_status & RX_DMA_BREAK) {
 				uport->icount.brk++;
+				pr_err("qcom_geni_serial: BREAK condition detected, status=0x%x\n", dma_rx_status);
+			}
 
-			if (dma_rx_status & (RX_DMA_DONE | RX_EOT))
-				qcom_geni_serial_handle_rx_dma(uport, drop_rx);
-		}
+			if (dma_rx_status & (RX_DMA_DONE | RX_EOT)) {
+       				 pr_err("qcom_geni_serial: RX DMA done, status=0x%x, len_in=%u\n",
+		        	       dma_rx_status, readl(uport->membase + SE_DMA_RX_LEN_IN));
+			        qcom_geni_serial_handle_rx_dma(uport, drop_rx);
+   	    		 }
+	  	 }
 	} else {
 		if (m_irq_status & m_irq_en &
 		    (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
