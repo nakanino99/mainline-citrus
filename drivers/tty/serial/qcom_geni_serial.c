@@ -931,6 +931,12 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
 	port->rx_dma_addr = 0;
 
 	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
+
+	if (drop && rx_in) {
+		dev_err(uport->dev, "dropped RX DMA data, len=%u: %*ph\n",
+		rx_in, min_t(u32, rx_in, 16), port->rx_buf);
+	}
+
 	if (!rx_in)
 		dev_warn_ratelimited(uport->dev, "serial engine reports 0 RX bytes in!\n");
 	else if (!drop)
