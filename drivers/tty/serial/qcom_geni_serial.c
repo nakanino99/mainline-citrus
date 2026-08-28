@@ -943,8 +943,11 @@ static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
 
 	if (!rx_in)
 		dev_warn_ratelimited(uport->dev, "serial engine reports 0 RX bytes in!\n");
-	else if (!drop)
+	else if (!drop) {
+		print_hex_dump(KERN_ERR, "geni rx_buf pre-push: ",
+			DUMP_PREFIX_OFFSET, 16, 1, port->rx_buf, rx_in, true);
 		handle_rx_uart(uport, rx_in);
+	}
 
 	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
 				  DMA_RX_BUF_SIZE,
