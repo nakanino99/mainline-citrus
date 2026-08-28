@@ -1751,6 +1751,10 @@ static int qca_port_reopen(struct hci_uart *hu)
 {
 	int ret;
 
+	bt_dev_err(hu->hdev, "qca_port_reopen: closing serial port");
+	serdev_device_close(hu->serdev);
+	bt_dev_err(hu->hdev, "qca_port_reopen: serial port closed");
+
 	/* Now the device is in ready state to communicate with host.
 	 * To sync host with device we need to reopen port.
 	 * Without this, we will have RTS and CTS synchronization

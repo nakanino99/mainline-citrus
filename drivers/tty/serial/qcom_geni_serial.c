@@ -857,6 +857,10 @@ static void qcom_geni_serial_stop_rx_dma(struct uart_port *uport)
         struct qcom_geni_serial_port *port = to_dev_port(uport);
         bool done;
 
+	dev_err(uport->dev, "stop_rx_dma: active=%d rx_dma_addr=%pad\n",
+		qcom_geni_serial_secondary_active(uport),
+		&port->rx_dma_addr);
+
         if (!qcom_geni_serial_secondary_active(uport)) {
                 /* Stale DMA mapping from a previous transfer may still be
                  * left behind even when no S command is active (e.g. after
