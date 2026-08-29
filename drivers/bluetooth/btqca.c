@@ -992,11 +992,18 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
 
 	msleep(20);
 
-	/* Perform HCI reset */
+	/* Perform HCI reset. The stock QCA vendor stack always sends
+	 * HCI_RESET twice after NVM download and does not treat failure
+	 * of either attempt as fatal - a transient RX glitch right after
+	 * NVM commit is expected/tolerated behavior for this SoC.
+	 */
+	err = qca_send_reset(hdev);
+	if (err < 0)
+		bt_dev_warn(hdev, "QCA first HCI_RESET failed (%d), retrying", err);
+
 	err = qca_send_reset(hdev);
 	if (err < 0) {
-		bt_dev_err(hdev, "QCA Failed to run HCI_RESET (%d)", err);
-		return err;
+		bt_dev_warn(hdev, "QCA second HCI_RESET failed (%d), continuing anyway", err);
 	}
 
 	switch (soc_type) {
