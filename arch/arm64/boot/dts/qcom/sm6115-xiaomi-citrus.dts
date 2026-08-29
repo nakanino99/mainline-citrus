@@ -502,11 +502,22 @@
 		bias-pull-up;
 	};
 
-	qup_uart3_cts_rx: qup-uart3-cts-rx-state {
-		pins = "gpio8", "gpio11";
+	qup_uart3_cts: qup-uart3-cts-state {
+		pins = "gpio8";
 		function = "qup3";
 		drive-strength = <2>;
-		bias-disable;
+		bias-pull-down;
+	};
+
+	qup_uart3_rx: qup-uart3-rx-state {
+		pins = "gpio11";
+		function = "qup3";
+		drive-strength = <2>;
+		/* Prevent garbage/BREAK on RX when the BT module's TX is
+		 * momentarily tri-stated (e.g. during internal chip
+		 * processing after NVM commit, before HCI_RESET response).
+		 */
+		bias-pull-up;
 	};
 
 	qup_uart3_rts: qup-uart3-rts-state {
@@ -621,7 +632,7 @@
 &uart3 {
 	status = "okay";
 	pinctrl-names = "default";
-	pinctrl-0 = <&qup_uart3_cts_rx>, <&qup_uart3_rts>, <&qup_uart3_tx>;
+	pinctrl-0 = <&qup_uart3_cts>, <&qup_uart3_rx>, <&qup_uart3_rts>, <&qup_uart3_tx>;
 
 	bluetooth {
 		compatible = "qcom,wcn3990-bt";
