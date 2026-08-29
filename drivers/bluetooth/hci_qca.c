@@ -2039,10 +2039,8 @@ retry:
 	}
 
 	/* Setup patch / NVM configurations */
-	hci_uart_set_flow_control(hu, true);
 	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, ver,
 			firmware_name, rampatch_name);
-	hci_uart_set_flow_control(hu, false);
 	if (!ret) {
 		clear_bit(QCA_IBS_DISABLED, &qca->flags);
 		qca_debugfs_init(hdev);
