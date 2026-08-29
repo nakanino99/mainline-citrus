@@ -116,7 +116,7 @@
 };
 
 &gpu_zap_shader {
-	firmware-name = "qcom/sm6115/Fxtec/QX1050/a610_zap.mbn";
+	firmware-name = "qcom/sm6115/xiaomi-citrus/a610_zap.mbn";
 };
 
 &i2c1 {
