@@ -446,7 +446,7 @@
 	pinctrl-1 = <&sdc2_state_off>;
 	pinctrl-names = "default", "sleep";
 
-	cd-gpios = <&tlmm 88 GPIO_ACTIVE_LOW>;
+	cd-gpios = <&tlmm 88 GPIO_ACTIVE_HIGH>;
 
 	vmmc-supply = <&pm6125_l22a>;
 	vqmmc-supply = <&pm6125_l5a>;
