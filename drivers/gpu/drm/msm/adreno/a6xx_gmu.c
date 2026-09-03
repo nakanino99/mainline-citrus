@@ -2254,6 +2254,14 @@ int a6xx_gmu_wrapper_init(struct a6xx_gpu *a6xx_gpu, struct device_node *node)
 		goto err_mmio;
 	}
 
+	gmu->icc_path = devm_of_icc_get(gmu->dev, "gfx-mem");
+	if (IS_ERR(gmu->icc_path)) {
+		ret = PTR_ERR(gmu->icc_path);
+		goto err_mmio;
+	}
+
+	icc_set_bw(gmu->icc_path, 0, Bps_to_icc(gpu->fast_rate) * 8);
+
 	gmu->initialized = true;
 
 	return 0;

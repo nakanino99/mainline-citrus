@@ -91,6 +91,7 @@ struct a6xx_gmu {
 	struct clk_bulk_data *clocks;
 	struct clk *core_clk;
 	struct clk *hub_clk;
+	struct icc_path *icc_path;
 
 	/* current performance index set externally */
 	int current_perf_index;
