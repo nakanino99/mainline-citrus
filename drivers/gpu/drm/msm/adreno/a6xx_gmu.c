@@ -2260,7 +2260,7 @@ int a6xx_gmu_wrapper_init(struct a6xx_gpu *a6xx_gpu, struct device_node *node)
 		goto err_mmio;
 	}
 
-	icc_set_bw(gmu->icc_path, 0, Bps_to_icc(gpu->fast_rate) * 8);
+	icc_set_bw(gmu->icc_path, Bps_to_icc(gpu->fast_rate) * 8, Bps_to_icc(gpu->fast_rate) * 8);
 
 	gmu->initialized = true;
 
