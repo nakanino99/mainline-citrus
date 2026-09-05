@@ -478,7 +478,7 @@
 		pins = "gpio92";
 		function = "gpio";
 		drive-strength = <16>;
-		bias-disable;
+		output-high;
 	};
 
 	panel_en_n: panel-en-n-state {
