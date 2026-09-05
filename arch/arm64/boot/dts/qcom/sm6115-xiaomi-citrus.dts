@@ -474,6 +474,13 @@
 		bias-pull-up;
 	};
 
+	wcd_reset_n: wcd-reset-n-state {
+		pins = "gpio92";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
 	panel_en_n: panel-en-n-state {
 		pins = "gpio65";
 		function = "gpio";
@@ -625,7 +632,7 @@
 };
 
 &uart3 {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names = "default";
 	pinctrl-0 = <&qup_uart3_cts_rx>, <&qup_uart3_rts>, <&qup_uart3_tx>;
 
@@ -638,5 +645,95 @@
 		swctrl-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
 		max-speed = <3200000>;
 		firmware-name = "crnv21.bin";
+	};
+};
+
+&rxmacro {
+	status = "okay";
+};
+
+&txmacro {
+	status = "okay";
+};
+
+&vamacro {
+	status = "okay";
+};
+
+&swr0 {
+	status = "okay";
+
+	wcd937x_tx: codec@0,3 {
+		compatible = "sdw20217010a00";
+		reg = <0 3>;
+		qcom,tx-port-mapping = <1 1 2 3>;
+	};
+};
+
+&swr1 {
+	status = "okay";
+
+	wcd937x_rx: codec@0,4 {
+		compatible = "sdw20217010a00";
+		reg = <0 4>;
+		qcom,rx-port-mapping = <1 2 3 4 5>;
+	};
+};
+
+/ {
+	wcd937x: codec {
+		compatible = "qcom,wcd9370-codec";
+		pinctrl-0 = <&wcd_reset_n>;
+		pinctrl-names = "default";
+		reset-gpios = <&tlmm 92 GPIO_ACTIVE_LOW>;
+		vdd-buck-supply = <&pm6125_l14a>;
+		vdd-rxtx-supply = <&pm6125_l9a>;
+		vdd-px-supply = <&pm6125_l9a>;
+		qcom,micbias1-microvolt = <1800000>;
+		qcom,micbias2-microvolt = <1800000>;
+		qcom,micbias3-microvolt = <1800000>;
+		qcom,micbias4-microvolt = <1800000>;
+		qcom,rx-device = <&wcd937x_rx>;
+		qcom,tx-device = <&wcd937x_tx>;
+		#sound-dai-cells = <1>;
+	};
+};
+
+/ {
+	sound: sound {
+		compatible = "qcom,sm6115-sndcard";
+		model = "Xiaomi-Poco-M3-Citrus";
+
+		audio-routing = "IN3_AUX", "AUX_OUT",
+				 "SpkrMono WSA_IN", "AUX";
+
+		mm1-dai-link {
+			link-name = "MultiMedia1";
+			cpu {
+				sound-dai = <&q6asmdai 0>;
+			};
+		};
+
+		wcd-dai-link {
+			link-name = "WCD Playback";
+
+			cpu {
+				sound-dai = <&q6afedai RX_CODEC_DMA_RX_1>;
+			};
+
+			platform {
+				sound-dai = <&q6routing>;
+			};
+
+			codec {
+				sound-dai = <&wcd937x 0>, <&rxmacro 0>;
+			};
+		};
+	};
+};
+
+&q6asmdai {
+	dai@0 {
+		reg = <0>;
 	};
 };
