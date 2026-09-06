@@ -2873,8 +2873,8 @@
 			resets = <&lpass_audiocc 0>;
 			reset-names = "swr_audio_cgcr";
 			label = "RX";
-			qcom,din-ports = <1>;
-			qcom,dout-ports = <6>;
+			qcom,din-ports = <0>;
+			qcom,dout-ports = <5>;
 			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x1f 0x1f 0x07 0x00>;
 			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x01 0x00>;
 			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
@@ -2940,7 +2940,7 @@
 			resets = <&lpasscc 0>;
 			reset-names = "swr_audio_cgcr";
 			label = "VA_TX";
-			qcom,din-ports = <4>;
+			qcom,din-ports = <3>;
 			qcom,dout-ports = <0>;
 			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x03 0x03>;
 			qcom,ports-offset1 =		/bits/ 8 <0x01 0x02 0x01>;
