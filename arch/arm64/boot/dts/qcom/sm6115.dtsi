@@ -2959,7 +2959,7 @@
 
 		lpasscc: clock-controller@a7ec000 {
 			compatible = "qcom,sm6115-lpasscc";
-			reg = <0x0 0x0a7ec000 0x0 0x1000>;
+			reg = <0x0 0x0a7ec000 0x0 0x13000>;
 			#reset-cells = <1>;
 		};
 
