@@ -2870,8 +2870,6 @@
 			interrupts = <GIC_SPI 297 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rxmacro>;
 			clock-names = "iface";
-			resets = <&lpass_audiocc 0>;
-			reset-names = "swr_audio_cgcr";
 			label = "RX";
 			qcom,din-ports = <0>;
 			qcom,dout-ports = <5>;
@@ -2937,8 +2935,6 @@
 			interrupt-names = "core", "wakeup";
 			clocks = <&txmacro>;
 			clock-names = "iface";
-			resets = <&lpasscc 0>;
-			reset-names = "swr_audio_cgcr";
 			label = "VA_TX";
 			qcom,din-ports = <3>;
 			qcom,dout-ports = <0>;
