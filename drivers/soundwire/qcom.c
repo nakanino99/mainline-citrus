@@ -745,14 +745,16 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
 				break;
 			case SWRM_INTERRUPT_STATUS_NEW_SLAVE_ATTACHED:
 			case SWRM_INTERRUPT_STATUS_CHANGE_ENUM_SLAVE_STATUS:
-				dev_dbg_ratelimited(ctrl->dev, "SWR new slave attached\n");
 				ctrl->reg_read(ctrl, SWRM_MCP_SLV_STATUS, &slave_status);
+				dev_err(ctrl->dev, "CITRUS-DEBUG: slave IRQ fired, old=0x%x new=0x%x\n",
+					ctrl->slave_status, slave_status);
 				if (ctrl->slave_status == slave_status) {
-					dev_dbg(ctrl->dev, "Slave status not changed %x\n",
-						slave_status);
+					dev_err(ctrl->dev, "CITRUS-DEBUG: SKIPPED (status unchanged)\n");
 				} else {
 					qcom_swrm_get_device_status(ctrl);
 					qcom_swrm_enumerate(&ctrl->bus);
+					dev_err(ctrl->dev, "CITRUS-DEBUG: calling sdw_handle_slave_status, status[0]=%d status[1]=%d status[2]=%d status[3]=%d\n",
+						ctrl->status[0], ctrl->status[1], ctrl->status[2], ctrl->status[3]);
 					sdw_handle_slave_status(&ctrl->bus, ctrl->status);
 				}
 				break;
