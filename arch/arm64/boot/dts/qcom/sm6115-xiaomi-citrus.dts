@@ -662,6 +662,8 @@
 
 &swr0 {
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&tx_swr_active>;
 
 	wcd937x_tx: codec@0,3 {
 		compatible = "sdw20217010a00";
@@ -672,6 +674,8 @@
 
 &swr1 {
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&rx_swr_active>;
 
 	wcd937x_rx: codec@0,4 {
 		compatible = "sdw20217010a00";
@@ -737,3 +741,40 @@
 		reg = <0>;
 	};
 };
+
+&lpass_tlmm {
+	tx_swr_active: tx-swr-active-state {
+		clk-pins {
+			pins = "gpio0";
+			function = "swr_tx_clk";
+			drive-strength = <10>;
+			slew-rate = <3>;
+			bias-disable;
+		};
+		data-pins {
+			pins = "gpio1", "gpio2";
+			function = "swr_tx_data";
+			drive-strength = <10>;
+			slew-rate = <3>;
+			bias-bus-hold;
+		};
+	};
+
+	rx_swr_active: rx-swr-active-state {
+		clk-pins {
+			pins = "gpio3";
+			function = "swr_rx_clk";
+			drive-strength = <10>;
+			slew-rate = <3>;
+			bias-disable;
+		};
+		data-pins {
+			pins = "gpio4", "gpio5";
+			function = "swr_rx_data";
+			drive-strength = <10>;
+			slew-rate = <3>;
+			bias-bus-hold;
+		};
+	};
+};
+
