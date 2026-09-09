@@ -726,6 +726,9 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
 		       &intr_sts);
 	intr_sts_masked = intr_sts & ctrl->intr_mask;
 
+	dev_err(ctrl->dev, "CITRUS-IRQ: raw=0x%x masked=0x%x mask=0x%x\n",
+		intr_sts, intr_sts_masked, ctrl->intr_mask);
+
 	do {
 		for (i = 0; i < SWRM_INTERRUPT_MAX; i++) {
 			value = intr_sts_masked & BIT(i);
