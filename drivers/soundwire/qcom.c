@@ -951,7 +951,10 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
 			SWRM_COMP_CFG_IRQ_LEVEL_OR_PULSE_MSK |
 			SWRM_COMP_CFG_ENABLE_MSK);
 
-	swrm_wait_for_frame_gen_enabled(ctrl);
+	{
+		bool fg_ok = swrm_wait_for_frame_gen_enabled(ctrl);
+		dev_err(ctrl->dev, "CITRUS-CLK: frame_gen_enabled=%d\n", fg_ok);
+	}
 	ctrl->slave_status = 0;
 	ctrl->reg_read(ctrl, SWRM_COMP_PARAMS, &val);
 
@@ -1593,7 +1596,9 @@ static int qcom_swrm_probe(struct platform_device *pdev)
 		goto err_init;
 	}
 
-	clk_prepare_enable(ctrl->hclk);
+	ret = clk_prepare_enable(ctrl->hclk);
+	dev_err(dev, "CITRUS-CLK: probe hclk enable ret=%d rate=%lu\n",
+		ret, clk_get_rate(ctrl->hclk));
 
 	ctrl->dev = dev;
 	dev_set_drvdata(&pdev->dev, ctrl);
@@ -1666,8 +1671,10 @@ static int qcom_swrm_probe(struct platform_device *pdev)
 	}
 
 	qcom_swrm_init(ctrl);
+	dev_err(dev, "CITRUS-CLK: after qcom_swrm_init, waiting for enumeration completion\n");
 	wait_for_completion_timeout(&ctrl->enumeration,
 				    msecs_to_jiffies(TIMEOUT_MS));
+	dev_err(dev, "CITRUS-CLK: enumeration wait done (may have timed out silently)\n");
 	ret = qcom_swrm_register_dais(ctrl);
 	if (ret)
 		goto err_master_add;
@@ -1710,6 +1717,8 @@ static int __maybe_unused swrm_runtime_resume(struct device *dev)
 {
 	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
 	int ret;
+
+	dev_err(dev, "CITRUS-CLK: swrm_runtime_resume called\n");
 
 	if (ctrl->wake_irq > 0) {
 		if (!irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
@@ -1775,6 +1784,8 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
 {
 	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
 	int ret;
+
+	dev_err(dev, "CITRUS-CLK: swrm_runtime_suspend called\n");
 
 	swrm_wait_for_wr_fifo_done(ctrl);
 	if (!ctrl->clock_stop_not_supported) {
