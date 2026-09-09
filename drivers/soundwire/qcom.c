@@ -1683,7 +1683,7 @@ static int qcom_swrm_probe(struct platform_device *pdev)
 		(ctrl->version >> 24) & 0xff, (ctrl->version >> 16) & 0xff,
 		ctrl->version & 0xffff);
 
-	pm_runtime_set_autosuspend_delay(dev, 3000);
+	pm_runtime_set_autosuspend_delay(dev, 60000);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_set_active(dev);
