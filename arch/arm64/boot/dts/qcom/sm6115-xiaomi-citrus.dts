@@ -748,14 +748,12 @@
 			pins = "gpio0";
 			function = "swr_tx_clk";
 			drive-strength = <10>;
-			slew-rate = <3>;
 			bias-disable;
 		};
 		data-pins {
 			pins = "gpio1", "gpio2";
 			function = "swr_tx_data";
 			drive-strength = <10>;
-			slew-rate = <3>;
 			bias-bus-hold;
 		};
 	};
@@ -765,14 +763,12 @@
 			pins = "gpio3";
 			function = "swr_rx_clk";
 			drive-strength = <10>;
-			slew-rate = <3>;
 			bias-disable;
 		};
 		data-pins {
 			pins = "gpio4", "gpio5";
 			function = "swr_rx_data";
 			drive-strength = <10>;
-			slew-rate = <3>;
 			bias-bus-hold;
 		};
 	};
