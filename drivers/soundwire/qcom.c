@@ -720,6 +720,17 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
 	u32 i;
 	int devnum;
 	int ret = IRQ_HANDLED;
+	int pm_ret;
+
+	pm_ret = pm_runtime_get_sync(ctrl->dev);
+	if (pm_ret < 0 && pm_ret != -EACCES) {
+		dev_err_ratelimited(ctrl->dev,
+				    "pm_runtime_get_sync failed in %s, ret %d\n",
+				    __func__, pm_ret);
+		pm_runtime_put_noidle(ctrl->dev);
+		return IRQ_NONE;
+	}
+
 	clk_prepare_enable(ctrl->hclk);
 
 	ctrl->reg_read(ctrl, ctrl->reg_layout[SWRM_REG_INTERRUPT_STATUS],
@@ -859,6 +870,10 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
 	} while (intr_sts_masked);
 
 	clk_disable_unprepare(ctrl->hclk);
+
+	pm_runtime_mark_last_busy(ctrl->dev);
+	pm_runtime_put_autosuspend(ctrl->dev);
+
 	return ret;
 }
 
