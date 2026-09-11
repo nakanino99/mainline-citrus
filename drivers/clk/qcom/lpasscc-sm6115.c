@@ -42,7 +42,7 @@ static struct regmap_config lpasscc_sm6115_regmap_config = {
 	.reg_stride = 4,
 	.val_bits = 32,
 	.name = "lpass-tcsr",
-	.max_register = 0x12000,
+	.max_register = 0xc100,
 };
 
 static const struct qcom_cc_desc lpasscc_sm6115_reset_desc = {
