@@ -2882,6 +2882,8 @@
 			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
 			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
 			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
+			resets = <&lpass_audiocc 0>;
+			reset-names = "swr_audio_cgcr";
 			#sound-dai-cells = <1>;
 			#address-cells = <2>;
 			#size-cells = <0>;
@@ -2947,6 +2949,8 @@
 			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff>;
 			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff>;
 			qcom,ports-lane-control =	/bits/ 8 <0x00 0x00 0x00>;
+			resets = <&lpasscc 0>;
+			reset-names = "swr_audio_cgcr";
 			#sound-dai-cells = <1>;
 			#address-cells = <2>;
 			#size-cells = <0>;
