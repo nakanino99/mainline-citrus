@@ -222,6 +222,7 @@ struct qcom_swrm_ctrl {
 	u32 slave_status;
 	u32 wr_fifo_depth;
 	bool clock_stop_not_supported;
+	void __iomem *hctl_reg;	/* HACK personal: not for upstream */
 };
 
 struct qcom_swrm_data {
@@ -906,6 +907,16 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
 	val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
 
 	reset_control_reset(ctrl->audio_cgcr);
+
+	/* HACK pribadi: clear bit HW_CTL (bit1) di CGCR fisik langsung,
+	 * meniru workaround downstream untuk SWR >=1.6. Jangan upstream. */
+	if (ctrl->hctl_reg) {
+		u32 temp = readl(ctrl->hctl_reg);
+
+		temp &= 0xFFFFFFFD;
+		writel(temp, ctrl->hctl_reg);
+		usleep_range(500, 505);
+	}
 
 	ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
 
@@ -1596,6 +1607,18 @@ static int qcom_swrm_probe(struct platform_device *pdev)
 			dev_err(dev, "Failed to get cgcr reset ctrl required for SW gating\n");
 			ret = PTR_ERR(ctrl->audio_cgcr);
 			goto err_init;
+		}
+
+		/* HACK pribadi: ioremap manual alamat fisik CGCR untuk clear bit
+		 * HW_CTL, meniru swrm_master_init() downstream. Jangan upstream. */
+		{
+			u32 hctl_phys = 0;
+
+			if (!of_property_read_u32(dev->of_node, "qcom,swrm-hctl-reg", &hctl_phys)) {
+				ctrl->hctl_reg = devm_ioremap(dev, hctl_phys, 0x4);
+				if (!ctrl->hctl_reg)
+					dev_warn(dev, "Failed to ioremap swrm-hctl-reg 0x%x\n", hctl_phys);
+			}
 		}
 	}
 
