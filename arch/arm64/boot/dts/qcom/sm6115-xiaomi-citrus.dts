@@ -709,7 +709,6 @@
 		model = "Xiaomi-Poco-M3-Citrus";
 
 		audio-routing = "IN3_AUX", "AUX_OUT",
-				 "SpkrMono WSA_IN", "AUX";
 
 		mm1-dai-link {
 			link-name = "MultiMedia1";
