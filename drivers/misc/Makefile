@@ -74,3 +74,5 @@ obj-$(CONFIG_MCHP_LAN966X_PCI)	+= lan966x-pci.o
 obj-y				+= keba/
 obj-y				+= amd-sbi/
 obj-$(CONFIG_MISC_RP1)		+= rp1/
+obj-$(CONFIG_AW87359_MIN)	+= aw87359_min.o
+obj-$(CONFIG_AW87519_MIN)	+= aw87519_min.o

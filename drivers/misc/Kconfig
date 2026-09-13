@@ -632,7 +632,21 @@ config MCHP_LAN966X_PCI
 	    - lan966x-pinctrl (PINCTRL_OCELOT)
 	    - lan966x-serdes (PHY_LAN966X_SERDES)
 	    - lan966x-miim (MDIO_MSCC_MIIM)
-	    - lan966x-switch (LAN966X_SWITCH)
+config AW87359_MIN
+	tristate "AW87359 minimal enable hack (personal, not for upstream)"
+	depends on I2C && OF
+	help
+	  Minimal driver to power up the AWINIC AW87359 audio PA and load
+	  its default earpiece (drcv) register profile. HACK PRIBADI —
+	  jangan upstream.
+
+config AW87519_MIN
+	tristate "AW87519 minimal enable hack (personal, not for upstream)"
+	depends on I2C && OF && GPIOLIB
+	help
+	  Minimal driver to power up the AWINIC AW87519 audio PA and load
+	  its default main-speaker (kspk) register profile. HACK PRIBADI —
+	  jangan upstream.
 
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
