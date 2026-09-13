@@ -136,6 +136,17 @@
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
+
+	aw87359: aw87359@58 {
+		compatible = "awinic,aw87359_pa";
+		reg = <0x58>;
+	};
+
+	aw87519: aw87519_pa@59 {
+		compatible = "awinic,aw87519_pa";
+		reg = <0x59>;
+		reset-gpios = <&tlmm 98 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 &spi2 {

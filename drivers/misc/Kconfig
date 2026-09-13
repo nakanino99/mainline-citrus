@@ -634,6 +634,15 @@ config MCHP_LAN966X_PCI
 	    - lan966x-miim (MDIO_MSCC_MIIM)
 	    - lan966x-switch (LAN966X_SWITCH)
 
+config AW873XX_PA_MINIMAL
+	tristate "AWINIC AW87359/AW87519 minimal PA driver"
+	depends on I2C
+	depends on GPIOLIB
+	help
+	  Minimal driver for AWINIC AW87359/AW87519 audio power
+	  amplifiers found on Xiaomi Poco M3. Programs a fixed
+	  register table at probe time.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
