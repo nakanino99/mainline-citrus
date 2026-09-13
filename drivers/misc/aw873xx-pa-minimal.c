@@ -131,9 +131,9 @@ static int aw873xx_probe(struct i2c_client *client)
 		}
 
 		/* Pulse reset: hold low, then release before I2C access. */
-		gpiod_set_value_cansleep(pa->reset_gpio, 1);
-		usleep_range(1000, 1500);
 		gpiod_set_value_cansleep(pa->reset_gpio, 0);
+		usleep_range(1000, 1500);
+		gpiod_set_value_cansleep(pa->reset_gpio, 1);
 		usleep_range(1000, 1500);
 	} else {
 		pa->regs = aw87359_dspk_regs;
