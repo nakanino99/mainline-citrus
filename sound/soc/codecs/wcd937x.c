@@ -722,8 +722,15 @@ static int wcd937x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		val = WCD937X_DIGITAL_PDM_WD_CTL2_EN |
-		      WCD937X_DIGITAL_PDM_WD_CTL2_TIMEOUT_SEL |
+		/* HACK pribadi: watchdog PDM AUX SENGAJA TIDAK di-enable
+		 * (bit EN dihilangkan) — watchdog ini selalu fire prematur
+		 * di board ini (dikonfirmasi via /proc/interrupts naik tiap
+		 * playback) meski TIMEOUT_SEL+HOLD_OFF sudah relax delay-nya,
+		 * menyebabkan codec reset di awal playback (tidak ada suara,
+		 * cuma klik). Root cause asli (kemungkinan startup rxmacro
+		 * yang telat, lihat RFC "relax the AUX PDM watchdog" Alexey
+		 * Klimov Okt 2024) belum ditemukan penuh. Tidak untuk upstream. */
+		val = WCD937X_DIGITAL_PDM_WD_CTL2_TIMEOUT_SEL |
 		      WCD937X_DIGITAL_PDM_WD_CTL2_HOLD_OFF;
 		snd_soc_component_update_bits(component,
 					      WCD937X_DIGITAL_PDM_WD_CTL2,
@@ -745,6 +752,7 @@ static int wcd937x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 					      BIT(7), BIT(7));
 		enable_irq(wcd937x->aux_pdm_wd_int);
 		break;
+
 	case SND_SOC_DAPM_PRE_PMD:
 		disable_irq_nosync(wcd937x->aux_pdm_wd_int);
 		snd_soc_component_update_bits(component,
