@@ -143,22 +143,19 @@ int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
 		return 0;
 
 	ret = sdw_prepare_stream(sruntime);
-	if (ret)
+	if (ret) {
+		dev_err(rtd->dev, "CITRUS-SDW: sdw_prepare_stream FAILED ret=%d\n", ret);
 		return ret;
-
-	/**
-	 * NOTE: there is a strict hw requirement about the ordering of port
-	 * enables and actual WSA881x PA enable. PA enable should only happen
-	 * after soundwire ports are enabled if not DC on the line is
-	 * accumulated resulting in Click/Pop Noise
-	 * PA enable/mute are handled as part of codec DAPM and digital mute.
-	 */
+	}
+	dev_err(rtd->dev, "CITRUS-SDW: sdw_prepare_stream OK\n");
 
 	ret = sdw_enable_stream(sruntime);
 	if (ret) {
+		dev_err(rtd->dev, "CITRUS-SDW: sdw_enable_stream FAILED ret=%d\n", ret);
 		sdw_deprepare_stream(sruntime);
 		return ret;
 	}
+	dev_err(rtd->dev, "CITRUS-SDW: sdw_enable_stream OK\n");
 	*stream_prepared  = true;
 
 	return ret;
