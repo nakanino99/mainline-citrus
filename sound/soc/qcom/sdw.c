@@ -81,6 +81,8 @@ int qcom_snd_sdw_startup(struct snd_pcm_substream *substream)
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
 		ret = snd_soc_dai_set_stream(codec_dai, sruntime,
 					     substream->stream);
+		dev_err(rtd->dev, "CITRUS-SDW: set_stream on %s ret=%d\n",
+			codec_dai->name, ret);
 		if (ret < 0 && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "Failed to set sdw stream on %s\n", codec_dai->name);
 			goto err_set_stream;
@@ -132,17 +134,25 @@ int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
 	int ret;
 
 
-	if (!qcom_snd_is_sdw_dai(cpu_dai->id))
+	if (!qcom_snd_is_sdw_dai(cpu_dai->id)) {
+		dev_err(rtd->dev, "CITRUS-SDW: not sdw dai, id=%d\n", cpu_dai->id);
 		return 0;
+	}
 
 	sruntime = qcom_snd_sdw_get_stream(substream);
-	if (!sruntime)
+	if (!sruntime) {
+		dev_err(rtd->dev, "CITRUS-SDW: sruntime NULL (get_stream failed)\n");
 		return 0;
+	}
 
-	if (*stream_prepared)
+	if (*stream_prepared) {
+		dev_err(rtd->dev, "CITRUS-SDW: already prepared, skipping\n");
 		return 0;
+	}
 
+	dev_err(rtd->dev, "CITRUS-SDW: proceeding to sdw_prepare_stream\n");
 	ret = sdw_prepare_stream(sruntime);
+
 	if (ret) {
 		dev_err(rtd->dev, "CITRUS-SDW: sdw_prepare_stream FAILED ret=%d\n", ret);
 		return ret;
