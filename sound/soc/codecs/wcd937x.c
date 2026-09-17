@@ -2670,14 +2670,25 @@ static int wcd937x_codec_free(struct snd_pcm_substream *substream,
 }
 
 static int wcd937x_codec_set_sdw_stream(struct snd_soc_dai *dai,
-					void *stream, int direction)
+                                        void *stream, int direction)
 {
-	struct wcd937x_priv *wcd937x = dev_get_drvdata(dai->dev);
-	struct wcd937x_sdw_priv *wcd = wcd937x->sdw_priv[dai->id];
+        struct wcd937x_priv *wcd937x = dev_get_drvdata(dai->dev);
+        struct wcd937x_sdw_priv *wcd = wcd937x->sdw_priv[dai->id];
 
-	wcd->sruntime = stream;
+        wcd->sruntime = stream;
 
-	return 0;
+        return 0;
+}
+
+static void *wcd937x_codec_get_sdw_stream(struct snd_soc_dai *dai, int direction)
+{
+        struct wcd937x_priv *wcd937x = dev_get_drvdata(dai->dev);
+        struct wcd937x_sdw_priv *wcd = wcd937x->sdw_priv[dai->id];
+
+        if (!wcd->sruntime)
+                return ERR_PTR(-ENOTSUPP);
+
+        return wcd->sruntime;
 }
 
 static int wcd937x_get_channel_map(const struct snd_soc_dai *dai,
@@ -2724,7 +2735,8 @@ static const struct snd_soc_dai_ops wcd937x_sdw_dai_ops = {
 	.hw_params = wcd937x_codec_hw_params,
 	.hw_free = wcd937x_codec_free,
 	.set_stream = wcd937x_codec_set_sdw_stream,
-	.get_channel_map = wcd937x_get_channel_map,
+        .get_stream = wcd937x_codec_get_sdw_stream,
+        .get_channel_map = wcd937x_get_channel_map,
 };
 
 static struct snd_soc_dai_driver wcd937x_dais[] = {
