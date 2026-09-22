@@ -2697,7 +2697,7 @@ static int wcd937x_get_channel_map(const struct snd_soc_dai *dai,
 {
 	struct wcd937x_priv *wcd937x = dev_get_drvdata(dai->dev);
 	struct wcd937x_sdw_priv *wcd = wcd937x->sdw_priv[dai->id];
-	int i;
+	int i, j;
 
 	switch (dai->id) {
 	case AIF1_PB:
@@ -2707,10 +2707,15 @@ static int wcd937x_get_channel_map(const struct snd_soc_dai *dai,
 			return -EINVAL;
 		}
 
-		for (i = 0; i < SDW_MAX_PORTS; i++)
-			rx_slot[i] = wcd->master_channel_map[i];
-
-		*rx_num = i;
+		/* CITRUS: cuma salin slot yang benar-benar ternegosiasi
+		 * (non-zero), bukan seluruh array mentah — dulu *rx_num
+		 * selalu = SDW_MAX_PORTS, membuat AFE menolak channel
+		 * count yang tidak masuk akal. */
+		for (i = 0, j = 0; i < SDW_MAX_PORTS; i++) {
+			if (wcd->master_channel_map[i])
+				rx_slot[j++] = wcd->master_channel_map[i];
+		}
+		*rx_num = j;
 		break;
 	case AIF1_CAP:
 		if (!tx_slot || !tx_num) {
@@ -2719,10 +2724,11 @@ static int wcd937x_get_channel_map(const struct snd_soc_dai *dai,
 			return -EINVAL;
 		}
 
-		for (i = 0; i < SDW_MAX_PORTS; i++)
-			tx_slot[i] = wcd->master_channel_map[i];
-
-		*tx_num = i;
+		for (i = 0, j = 0; i < SDW_MAX_PORTS; i++) {
+			if (wcd->master_channel_map[i])
+				tx_slot[j++] = wcd->master_channel_map[i];
+		}
+		*tx_num = j;
 		break;
 	default:
 		break;
