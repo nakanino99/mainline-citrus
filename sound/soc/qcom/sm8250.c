@@ -58,6 +58,7 @@ static void sm8250_snd_exit(struct snd_soc_pcm_runtime *rtd)
 static int sm8250_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				     struct snd_pcm_hw_params *params)
 {
+	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
 	struct snd_interval *rate = hw_param_interval(params,
 					SNDRV_PCM_HW_PARAM_RATE);
 	struct snd_interval *channels = hw_param_interval(params,
@@ -65,7 +66,18 @@ static int sm8250_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
 	rate->min = rate->max = 48000;
-	channels->min = channels->max = 2;
+
+	switch (cpu_dai->id) {
+	case RX_CODEC_DMA_RX_1:
+		/* CITRUS: port AUX/LO fisik mono di board ini,
+		 * sesuai mixer_paths.xml resmi Xiaomi (Channels="One") */
+		channels->min = channels->max = 1;
+		break;
+	default:
+		channels->min = channels->max = 2;
+		break;
+	}
+
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S16_LE);
 
 	return 0;
@@ -137,9 +149,48 @@ static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
 	return qcom_snd_sdw_hw_free(substream, &data->stream_prepared[cpu_dai->id]);
 }
 
+static int sm8250_snd_hw_params(struct snd_pcm_substream *substream,
+				 struct snd_pcm_hw_params *params)
+{
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
+	struct snd_soc_dai *codec_dai;
+	u32 rx_ch[SDW_MAX_PORTS], tx_ch[SDW_MAX_PORTS];
+	u32 rx_ch_cnt = 0, tx_ch_cnt = 0;
+	int ret, i;
+
+	for_each_rtd_codec_dais(rtd, i, codec_dai) {
+		ret = snd_soc_dai_get_channel_map(codec_dai,
+				&tx_ch_cnt, tx_ch, &rx_ch_cnt, rx_ch);
+		if (ret == -ENOTSUPP)
+			continue;
+		if (ret < 0) {
+			dev_err(rtd->dev, "CITRUS: failed to get codec chan map: %d\n", ret);
+			return ret;
+		}
+
+		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK && rx_ch_cnt) {
+			dev_err(rtd->dev, "CITRUS: propagate rx_ch_cnt=%d rx_ch[0]=0x%x\n",
+				rx_ch_cnt, rx_ch[0]);
+			ret = snd_soc_dai_set_channel_map(cpu_dai, 0, NULL,
+							  rx_ch_cnt, rx_ch);
+		} else if (tx_ch_cnt) {
+			ret = snd_soc_dai_set_channel_map(cpu_dai, tx_ch_cnt,
+							  tx_ch, 0, NULL);
+		}
+		if (ret < 0 && ret != -ENOTSUPP) {
+			dev_err(rtd->dev, "CITRUS: failed to set cpu chan map: %d\n", ret);
+			return ret;
+		}
+	}
+
+	return 0;
+}
+
 static const struct snd_soc_ops sm8250_be_ops = {
 	.startup = sm8250_snd_startup,
 	.shutdown = qcom_snd_sdw_shutdown,
+	.hw_params = sm8250_snd_hw_params,
 	.hw_free = sm8250_snd_hw_free,
 	.prepare = sm8250_snd_prepare,
 };
