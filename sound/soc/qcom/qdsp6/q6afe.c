@@ -1653,7 +1653,14 @@ void q6afe_cdc_dma_port_prepare(struct q6afe_port *port,
 	dma_cfg->bit_width = cfg->bit_width;
 	dma_cfg->data_format = cfg->data_format;
 	dma_cfg->num_channels = cfg->num_channels;
-	if (!cfg->active_channels_mask)
+
+	/* CITRUS: baris asal cuma isi active_channels_mask lewat fallback
+	 * kalau cfg->active_channels_mask kosong — begitu propagasi channel
+	 * map asli berhasil (non-zero), field ini malah TIDAK PERNAH
+	 * di-copy ke dma_cfg, jadi selalu terkirim 0 ke DSP -> EBADPARAM */
+	if (cfg->active_channels_mask)
+		dma_cfg->active_channels_mask = cfg->active_channels_mask;
+	else
 		dma_cfg->active_channels_mask = (1 << cfg->num_channels) - 1;
 }
 EXPORT_SYMBOL_GPL(q6afe_cdc_dma_port_prepare);
