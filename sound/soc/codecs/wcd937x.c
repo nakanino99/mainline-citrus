@@ -730,6 +730,18 @@ static int wcd937x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 		 * cuma klik). Root cause asli (kemungkinan startup rxmacro
 		 * yang telat, lihat RFC "relax the AUX PDM watchdog" Alexey
 		 * Klimov Okt 2024) belum ditemukan penuh. Tidak untuk upstream. */
+		if (hph_mode == CLS_AB || hph_mode == CLS_AB_HIFI)
+			snd_soc_component_update_bits(component,
+				      WCD937X_ANA_RX_SUPPLIES,
+				      BIT(1), BIT(1));
+		snd_soc_component_update_bits(component,
+			      WCD937X_ANA_RX_SUPPLIES,
+			      BIT(6), BIT(6));
+		snd_soc_component_update_bits(component,
+			      WCD937X_ANA_RX_SUPPLIES,
+			      BIT(7), BIT(7));
+		usleep_range(1000, 1010);
+
 		val = WCD937X_DIGITAL_PDM_WD_CTL2_TIMEOUT_SEL |
 		      WCD937X_DIGITAL_PDM_WD_CTL2_HOLD_OFF;
 		snd_soc_component_update_bits(component,
@@ -738,32 +750,22 @@ static int wcd937x_codec_enable_aux_pa(struct snd_soc_dapm_widget *w,
 					      val);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		usleep_range(1000, 1010);
-		if (hph_mode == CLS_AB || hph_mode == CLS_AB_HIFI)
-			snd_soc_component_update_bits(component,
-						      WCD937X_ANA_RX_SUPPLIES,
-						      BIT(1), BIT(1));
-		/* Enable AUX PA related RX supplies */
-		snd_soc_component_update_bits(component,
-					      WCD937X_ANA_RX_SUPPLIES,
-					      BIT(6), BIT(6));
-		snd_soc_component_update_bits(component,
-					      WCD937X_ANA_RX_SUPPLIES,
-					      BIT(7), BIT(7));
 		enable_irq(wcd937x->aux_pdm_wd_int);
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
 		disable_irq_nosync(wcd937x->aux_pdm_wd_int);
-		snd_soc_component_update_bits(component,
-					      WCD937X_ANA_RX_SUPPLIES,
-					      BIT(6), 0x00);
-		snd_soc_component_update_bits(component,
-					      WCD937X_ANA_RX_SUPPLIES,
-					      BIT(7), 0x00);
+
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		usleep_range(2000, 2010);
+		snd_soc_component_update_bits(component,
+			      WCD937X_ANA_RX_SUPPLIES,
+			      BIT(6), 0x00);
+		snd_soc_component_update_bits(component,
+			      WCD937X_ANA_RX_SUPPLIES,
+			      BIT(7), 0x00);
+
 		wcd_clsh_ctrl_set_state(wcd937x->clsh_info,
 					WCD_CLSH_EVENT_POST_PA,
 					WCD_CLSH_STATE_AUX,
