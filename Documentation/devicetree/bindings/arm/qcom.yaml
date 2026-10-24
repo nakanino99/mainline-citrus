@@ -1008,6 +1008,7 @@ properties:
       - items:
           - enum:
               - fxtec,pro1x
+              - xiaomi,citrus
           - const: qcom,sm6115
 
       - items:
